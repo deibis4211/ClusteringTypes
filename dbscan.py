@@ -59,7 +59,7 @@ class DBScan:
         for cluster in unique_clusters:
             if cluster == 0:  # Puntos de ruido
                 color = 'k'
-                label = 'Noise'
+                label = 'Ruido'
             else:
                 color = plt.cm.jet(float(cluster) / max(unique_clusters))  # Colores únicos por clúster
                 label = f'Cluster {cluster}'
