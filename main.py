@@ -14,8 +14,7 @@ def import_iris(type="normal"):
         iris = datasets.load_iris()
         pca = PCA(n_components=2)
         data = pca.fit_transform(iris.data)
-        return data
-
+        return {"data": data, "target": iris.target}  # Devuelve datos y etiquetas
 
 def evaluate_clustering(true_labels, predicted_labels, method_name):
     """Evalúa el rendimiento del clustering usando ARI y NMI."""
@@ -40,7 +39,7 @@ def call_agglomerative(data, feature_names, true_labels):
 
 def call_spectral(data, feature_names, true_labels):
     spectral_model = spectral.SpectralClusteringModel(n_clusters=2)
-    predicted_labels = spectral_model.fit_predict(data)
+    predicted_labels = spectral_model.fit_predict(data, feature_names)
     evaluate_clustering(true_labels, predicted_labels, "Spectral Clustering")
 
 def call_kmeans(data, feature_names, true_labels):
@@ -51,15 +50,17 @@ def call_kmeans(data, feature_names, true_labels):
 
 
 if __name__ == '__main__':
-    # TODO el PCA aún no furrula
+    # Problema con el PCA arreglado :)
     type = "pca"
     iris = import_iris(type)
-    data = iris.data  # Extraer las características del conjunto de datos
-    true_labels = iris.target  # Etiquetas reales del conjunto de datos
 
     if type == "normal":
-        feature_names = iris.feature_names  # Extraer los nombres de las características
+        data = iris.data  # Extraer las características del conjunto de datos
+        true_labels = iris.target
+        feature_names = iris.feature_names
     elif type == "pca":
+        data = iris["data"]  # Extraer las características transformadas por PCA
+        true_labels = iris["target"]
         feature_names = ["PCA1", "PCA2"]
 
     # Llamadas a las funciones
