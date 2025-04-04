@@ -8,7 +8,7 @@ class SpectralClusteringModel:
         self.sigma = sigma
         self.labels = None
 
-    def fit(self, X):
+    def fit(self, X, feature_names):
         """Ajusta el modelo de clustering espectral a los datos"""
         # Paso 1: Construir la matriz de afinidad (grafo de similitud)
         affinity_matrix = self._compute_affinity_matrix(X)
@@ -26,17 +26,17 @@ class SpectralClusteringModel:
         kmeans = KMeans(n_clusters=self.n_clusters, random_state=42)
         self.labels = kmeans.fit_predict(selected_eigenvectors)
 
-        self.plot_clusters(X)
+        self.plot_clusters(X, feature_names)
 
-    def fit_predict(self, X):
+    def fit_predict(self, X, feature_names):
         """Ajusta el modelo y devuelve las etiquetas predichas"""
-        self.fit(X)
+        self.fit(X, feature_names)
         return self.labels
 
-    def plot_clusters(self, X):
+    def plot_clusters(self, X, feature_names):
         """Método para graficar los clusters"""
         if self.labels is None:
-            raise ValueError("Debe ejecutar 'fit' o 'fit_predict' antes de graficar")
+            raise ValueError("Ejecuta 'fit' o 'fit_predict' antes de graficar")
 
         plt.figure(figsize=(8, 6))
         unique_labels = np.unique(self.labels)
@@ -44,9 +44,15 @@ class SpectralClusteringModel:
             cluster_points = X[self.labels == label]
             plt.scatter(cluster_points[:, 0], cluster_points[:, 1], label=f'Cluster {label + 1}', s=30)
 
-        plt.title("Spectral Clustering (Custom Implementation)")
-        plt.xlabel("Feature 1")
-        plt.ylabel("Feature 2")
+        plt.title("Spectral Clustering")
+        # Usar los nombres de las características si se proporcionan
+        print(f"Feature names: {feature_names}")
+        if feature_names and len(feature_names) >= 2:
+            plt.xlabel(feature_names[0])
+            plt.ylabel(feature_names[1])
+        else:
+            plt.xlabel("Feature 1")
+            plt.ylabel("Feature 2")
         plt.legend()
         plt.show()
 
