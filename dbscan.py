@@ -11,7 +11,7 @@ class DBScan:
         self.noise = None
         self.data = None
 
-    def fit(self, data, feature_names=None):
+    def fit(self, data, feature_names=None, class_labels=None):
         self.data = np.array(data)
         self.clusters = [0] * len(data)
         self.visited = [False] * len(data)
@@ -26,7 +26,7 @@ class DBScan:
                 else:
                     c += 1
                     self.expand_cluster(i, neighbours, c)
-        self.plot_clusters(feature_names)  # Llamar al método para graficar los clústeres
+        self.plot_clusters(feature_names, class_labels)  # Llamar al método para graficar los clústeres
         return self.clusters
 
     def region_query(self, i):
@@ -50,7 +50,7 @@ class DBScan:
                 self.clusters[n] = c
             j += 1
 
-    def plot_clusters(self, feature_names=None):
+    def plot_clusters(self, feature_names=None, class_labels=None):
         """Método para graficar los clústeres."""
         clusters = np.array(self.clusters)
         unique_clusters = set(clusters)
@@ -62,7 +62,8 @@ class DBScan:
                 label = 'Ruido'
             else:
                 color = plt.cm.jet(float(cluster) / max(unique_clusters))  # Colores únicos por clúster
-                label = f'Cluster {cluster}'
+                # Usar el nombre de la clase si se proporciona
+                label = class_labels[cluster-1] if class_labels and cluster in class_labels else f'Cluster {cluster}'
 
             cluster_points = self.data[clusters == cluster]
             plt.scatter(cluster_points[:, 0], cluster_points[:, 1], color=color, label=label, s=30)
