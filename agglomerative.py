@@ -40,7 +40,7 @@ class agglomerative_clustering:
         self.clusters = None
         self.labels = None
 
-    def fit(self, X, feature_names):
+    def fit(self, X, feature_names, class_labels):
         # Inicializar los clústeres con índices en lugar de puntos
         self.clusters = [Cluster([i], self.affinity) for i in range(len(X))]
         while len(self.clusters) > self.n_clusters:
@@ -53,7 +53,7 @@ class agglomerative_clustering:
             for idx in c.points:  # `c.points` ahora contiene índices
                 self.labels[idx] = i
 
-        self.plot_clusters(X, feature_names)  # Llamar al método para graficar los clústeres
+        self.plot_clusters(X, feature_names, class_labels)  # Llamar al método para graficar los clústeres
 
     def _find_closest_clusters(self, X):
         closest_distance = float('inf')
@@ -73,11 +73,11 @@ class agglomerative_clustering:
         del self.clusters[j]
         self.clusters[i] = new_cluster
 
-    def fit_predict(self, X, feature_names=None):
-        self.fit(X, feature_names)
+    def fit_predict(self, X, feature_names=None, class_labels=None):
+        self.fit(X, feature_names, class_labels)
         return self.labels
 
-    def plot_clusters(self, X, feature_names=None):
+    def plot_clusters(self, X, feature_names=None, class_labels=None):
         """Método para graficar los clústeres."""
         if self.labels is None:
             raise ValueError("Debe ejecutar 'fit' o 'fit_predict' antes de graficar.")
@@ -86,7 +86,9 @@ class agglomerative_clustering:
         unique_labels = np.unique(self.labels)  # Obtener etiquetas únicas
         for label in unique_labels:
             cluster_points = X[self.labels == label]  # Filtrar puntos del clúster
-            plt.scatter(cluster_points[:, 0], cluster_points[:, 1], label=f'Cluster {label + 1}', s=30)
+            # Usar el nombre de la clase si se proporciona
+            cluster_label = class_labels[label] if class_labels and label in class_labels else f'Cluster {label + 1}'
+            plt.scatter(cluster_points[:, 0], cluster_points[:, 1], label=cluster_label, s=30)
 
         plt.title("Agglomerative Clustering")
         if feature_names and len(feature_names) >= 2:
